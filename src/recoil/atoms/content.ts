@@ -1,4 +1,5 @@
 import { atom, selector } from 'recoil';
+import { sampleParagraphs } from '@src/recoil/atoms/sample';
 
 // typography
 const replaceQuotes = (x) => x.replace(/"([^"]*)"/g, '«$1»');
@@ -6,7 +7,7 @@ const replaceMdash = (x) => x.replace('--', '―');
 
 export const contentAtom = atom({
   key: 'contentAtom',
-  default: ['Загрузите', 'Страницу'],
+  default: sampleParagraphs,
 });
 
 export const contentParagraphsSelector = selector({

@@ -23,13 +23,15 @@ const Readertab = () => {
     });
   });
   return (
-    <div className="Reader">
-      <header className="Reader-header">
+    <main className={'container mx-auto bg-reader-background'}>
+      <div className="text-reader-text font-serif text-xl overflow-y-scroll">
         {paragraphs.map((p, i) => (
-          <p key={i}>{p}</p>
+          <p key={i} className="py-2">
+            {p}
+          </p>
         ))}
-      </header>
-    </div>
+      </div>
+    </main>
   );
 };
 
