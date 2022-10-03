@@ -23,8 +23,13 @@ const Readertab = () => {
     });
   });
   return (
-    <main className={'container mx-auto bg-reader-background'}>
-      <div className="text-reader-text font-serif text-xl overflow-y-scroll">
+    <main
+      className={
+        'container mx-auto bg-reader-background text-reader-text font-serif text-xl'
+      }
+    >
+      <div className="px-6 max-w-[55ch] leading-6 antialiased border-solid border-2 border-neutral-500">
+        <h1 className="text-3xl py-4 font-bold">Title</h1>
         {paragraphs.map((p, i) => (
           <p key={i} className="py-2">
             {p}
