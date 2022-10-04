@@ -1,7 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import '@pages/popup/Popup.sass';
-import '../../typings/messages';
-import { DOMMessage } from '@src/typings/messages';
+import '../../common/types/message.model';
+import { DOMMessage } from '@src/common/types/message.model';
+import { presetExists } from '@src/config/presets';
+
+/** Internal URL of extension Reader Tab */
+const readerUrl = chrome.runtime.getURL('src/pages/readertab/index.html');
 
 const getContentTab = async () => {
   return await chrome.tabs.query({
@@ -10,9 +14,19 @@ const getContentTab = async () => {
   });
 };
 
-const createReaderTab = async () => {
-  const readerUrl = chrome.runtime.getURL('src/pages/readertab/index.html');
+// TODO wait until content is fully loaded and background script loaded, then create tab
+// possibly use onUpdate event
+const executePopup = async () => {
   const [contentTab] = await getContentTab();
+  if (presetExists(contentTab.url)) {
+    createReaderTab(contentTab.id);
+    return 'Happy reading.';
+  } else {
+    return 'No preset exists, try another site.';
+  }
+};
+
+const createReaderTab = async (id) => {
   const tab = await chrome.tabs.create({
     url: readerUrl,
     active: false,
@@ -20,8 +34,8 @@ const createReaderTab = async () => {
   chrome.tabs.onUpdated.addListener((tab, info) => {
     if (info.status === 'complete') {
       chrome.tabs.sendMessage(tab, {
-        type: 'TAB_ID',
-        payload: contentTab.id,
+        type: 'DATA_TAB_ID',
+        payload: id,
       } as DOMMessage);
     }
   });
@@ -29,14 +43,15 @@ const createReaderTab = async () => {
 };
 
 const Popup = () => {
+  // TODO make message a component with props
+  const [message, setMessage] = useState(' ');
   useEffect(() => {
-    createReaderTab();
-  });
-
+    executePopup() //
+      .then((msg) => setMessage(msg));
+  }, []);
   return (
     <div className="App">
-      <h1>HELLO</h1>
-      <p>See the tab</p>
+      <div className="text-reader-text font-serif text-xl">{message}</div>
     </div>
   );
 };

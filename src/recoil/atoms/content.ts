@@ -1,34 +1,46 @@
-import { atom, selector } from 'recoil';
-import { sampleParagraphs } from '@src/recoil/atoms/sample';
+import { atom, selector, DefaultValue } from 'recoil';
+import { sampleBook } from '@src/recoil/atoms/sample';
+import { Book } from '@src/common/types/book.model';
+import { pipe } from '@src/common/functional';
 
+// TODO move to presets, remove from atoms logic
 // typography
-const replaceQuotes = (x) => x.replace(/"([^"]*)"/g, '«$1»');
-const replaceMdash = (x) => x.replace('--', '―');
+const replaceQuotes: (string) => string = (x) =>
+  x.replace(/"([^"]*)"/g, '«$1»');
+const replaceMdash: (string) => string = (x) => x.replace('--', '―'); //
 
-export const contentAtom = atom({
+const fixTypography: (string) => string = (s) =>
+  pipe([
+    //
+    replaceMdash,
+    replaceQuotes,
+  ])(s);
+
+export const bookAtom = atom<Book>({
   key: 'contentAtom',
-  default: sampleParagraphs,
+  default: sampleBook as Book,
 });
 
-export const contentParagraphsSelector = selector({
-  key: 'contentParagraphsSelector',
+export const bookSelector = selector<Book>({
+  key: 'bookSelector',
   get: ({ get }) => {
-    const paragraphs = get(contentAtom);
-    return paragraphs.map((s) => s.trim());
+    return get(bookAtom);
   },
-  set: ({ set }, newValue: Array<string>) => {
-    let para = '';
-    const paragraphs = newValue.reduce((acc, val) => {
-      if (val.startsWith('     ')) {
-        acc.push(para);
-        para = val.trim();
-      } else {
-        val = replaceQuotes(val);
-        val = replaceMdash(val);
-        para = para + ' ' + val;
-      }
-      return acc;
-    }, [] as Array<string>);
-    set(contentAtom, paragraphs);
+  set: ({ set }, newValue) => {
+    if (newValue instanceof DefaultValue) {
+      set(bookAtom, newValue);
+    } else {
+      let para = '';
+      const paragraphs = newValue.paragraphs.reduce((acc, val) => {
+        if (val.startsWith('     ')) {
+          acc.push(para);
+          para = val.trim();
+        } else {
+          para = para + ' ' + fixTypography(val);
+        }
+        return acc;
+      }, []);
+      set(bookAtom, { title: newValue.title, paragraphs: paragraphs });
+    }
   },
 });
