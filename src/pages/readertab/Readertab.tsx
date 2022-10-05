@@ -27,23 +27,35 @@ const Readertab = () => {
   }, []);
 
   return (
-    <main
-      className={
-        'container mx-auto bg-reader-background text-reader-text font-serif text-xl'
-      }
-    >
-      <div className="px-6 max-w-[55ch] leading-6 antialiased border-solid border-2 border-neutral-500">
-        <h1 className="text-3xl py-4 font-bold">{book.title}</h1>
-        <h2>
+    <div className="container mx-auto bg-reader-background">
+      <header className="font-sans">
+        <h1 className="text-3xl font-bold">{book.title}</h1>
+        <h6 className="text-sm pt-1 pb-4">
           Parsed from: <a href={book.url}>{book.url}</a>
-        </h2>
-        {book.paragraphs.map((p, i) => (
-          <p key={i} className="py-2 indent-8">
-            {p}
-          </p>
-        ))}
-      </div>
-    </main>
+        </h6>
+      </header>
+      <main className="font-serif text-xl pb-4">
+        <div className="px-4 max-w-[55ch] leading-6 antialiased">
+          {book.paragraphs.map((para, index) => {
+            const reg = /<h[1-6]>(.*)<\/h[1-6]>/gi;
+            const match = para.match(reg);
+            if (match) {
+              return (
+                <h2 key={index} className="indent-8 pt-4 pb-2 font-bold">
+                  {match[0].replace(reg, '$1')}
+                </h2>
+              );
+            } else {
+              return (
+                <p key={index} className="indent-8">
+                  {para}
+                </p>
+              );
+            }
+          })}
+        </div>
+      </main>
+    </div>
   );
 };
 

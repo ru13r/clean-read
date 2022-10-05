@@ -4,17 +4,26 @@
 import { Preset } from '@src/common/types/preset.model';
 import { fixTypography } from '../common/typography';
 
+const removeTagsExceptH2 = (x) => x.replace(/(<\/?(h2)[^>]*>)|<[^>]+>/gi, '$1');
+
 const libruGroupParagraphs = (paragraphs) => {
   let para = '';
-  return paragraphs.reduce((acc, val) => {
-    if (val.startsWith('     ')) {
-      acc.push(para);
-      para = val.trim();
-    } else {
-      para = para + ' ' + val;
-    }
-    return acc;
-  }, []);
+  return paragraphs
+    .reduce((acc: string[], val: string) => {
+      if (
+        val.startsWith('     --') ||
+        val.startsWith('     ') ||
+        val.startsWith('<')
+      ) {
+        para = removeTagsExceptH2(para);
+        acc.push(para);
+        para = val.trim();
+      } else {
+        para = para + ' ' + val;
+      }
+      return acc;
+    }, [])
+    .slice(0, -2); // last paragraphs are removed as they contain meta info
 };
 
 const presets: Array<Preset> = [
