@@ -1,10 +1,9 @@
 import React from 'react';
 import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
-import { bookSelector } from '@src/recoil/atoms/content';
-
-import '@pages/readertab/Readertab.sass';
 import { DOMMessage } from '@src/common/types/message.model';
+import { bookSelector } from '@src/recoil/atoms/content';
+import '@pages/readertab/Readertab.sass';
 
 const getContent = async (tab) => {
   const content = await chrome.tabs.sendMessage(tab, {
@@ -17,9 +16,12 @@ const Readertab = () => {
   const [book, setBook] = useRecoilState(bookSelector);
   useEffect(() => {
     chrome.runtime.onMessage.addListener((message: DOMMessage) => {
-      if (message.type === 'DATA_TAB_ID') {
+      if (message.type === 'PARSE_TAB_ID') {
         getContent(message.payload) //
-          .then((book) => setBook(() => book));
+          .then((book) => {
+            document.title = book.title;
+            setBook(() => book);
+          });
       }
     });
   });
