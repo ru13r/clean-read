@@ -2,6 +2,7 @@ import { Book } from '@src/common/types/book.model';
 
 export const sampleBook: Book = {
   title: 'Sample title',
+  url: 'https://localhost',
   paragraphs: [
     `
 "О, моя Америка, сладостная, открытая мною земля!" - пишет Матео Ренальдо Колумб 

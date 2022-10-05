@@ -2,37 +2,34 @@ import refreshOnUpdate from 'virtual:reload-on-update-in-view';
 import { DOMMessage } from '@src/common/types/message.model';
 import { Book } from '@src/common/types/book.model';
 import { Preset } from '@src/common/types/preset.model';
-import { getSitePreset, presetExists } from '@src/config/presets';
-import { pipe } from '@src/common/functional';
+import { getSitePresetByUrl, presetExists } from '@src/site-presets';
 
 refreshOnUpdate('pages/content/parser');
 
-const getData: (Preset) => Book = (preset: Preset) => {
+const url = document.URL;
+
+const getBook: (Preset) => Book = (preset: Preset) => {
   const select = (selector) => document.querySelector(selector);
   const process = (processor) => (element) => processor(element);
-  const getEntity = (name) =>
-    pipe([
-      //
-      process(preset.processors[name]), //
-    ])(select(preset.selectors[name]));
+  const getData = (name) =>
+    process(preset.parsers[name])(select(preset.selectors[name]));
   return {
-    title: getEntity('title'),
-    paragraphs: getEntity('content'),
+    title: getData('title'),
+    paragraphs: getData('main'),
+    url: url,
   };
 };
 
 chrome.runtime.onMessage.addListener((message: DOMMessage, _, response) => {
   if (message.type === 'STATUS_READERTAB_READY') {
-    const url = document.URL;
     // Test if preset exists for URL
     if (presetExists(url)) {
       // yes - parse the page and send content to ReaderTab
-      const preset = getSitePreset(url);
-      const data = getData(preset);
-      // TODO wait until content is fully loaded, then send message to create tab
+      const preset = getSitePresetByUrl(url);
+      const book = getBook(preset);
       response({
         type: 'DATA_BOOK',
-        payload: data,
+        payload: book,
       } as DOMMessage);
     } else {
       // no - send the error

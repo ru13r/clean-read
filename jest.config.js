@@ -159,7 +159,7 @@ export default {
   testPathIgnorePatterns: [
     '<rootDir>/node_modules/',
     '<rootDir>/test-utils/',
-    '<rootDir>/vite.config.ts',
+    '<rootDir>/vite.presets.ts',
     '<rootDir>/jest.config.js',
   ],
 

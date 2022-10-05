@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { PopupState } from '@src/common/types/popupState.model';
 import { DOMMessage } from '@src/common/types/message.model';
-import { presetExists } from '@src/config/presets';
+import { presetExists } from '@src/site-presets';
 import '@pages/popup/Popup.sass';
 
 /** Internal URL of extension Reader Tab */

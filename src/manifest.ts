@@ -1,6 +1,6 @@
 import packageJson from '../package.json';
 import { ManifestType } from '@src/manifest-type';
-import { getMatches } from './config/presets';
+import { getMatches } from './site-presets';
 
 const manifest: ManifestType = {
   manifest_version: 3,
@@ -21,12 +21,11 @@ const manifest: ManifestType = {
   },
   content_scripts: [
     {
-      /** get URL matches from the config file */
+      /** get URL matches from the site-presets file */
       matches: getMatches(),
       js: ['src/pages/content/index.js'],
     },
   ],
-  devtools_page: 'src/pages/devtools/index.html',
   web_accessible_resources: [
     {
       resources: [
