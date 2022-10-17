@@ -15,11 +15,11 @@ export const bookSelector = selector({
       const { processParagraphs, processParagraph } = getSitePresetByUrl(
         newValue.url
       );
-      console.log(newValue.paragraphs);
+      // console.log(newValue.paragraphs);
       const paragraphs = //
         processParagraphs(newValue.paragraphs) //
           .map(processParagraph);
-      console.log(paragraphs);
+      // console.log(paragraphs);
       set(bookAtom, {
         title: newValue.title,
         paragraphs: paragraphs,
